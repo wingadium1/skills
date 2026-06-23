@@ -87,6 +87,33 @@ If no lesson is active (no wip note or ambiguous context), ask which course/sect
 
 **Done when**: note appended under correct lesson prefix. No file writes beyond the literature note.
 
+### REPHRASE NOTE
+
+**Trigger**: "rephrase this", "clarify this note", "let's refine this thought"
+
+This action transforms a raw, quickly-captured note into a clearer, more familiar, and well-understood concept through a relentless interview process.
+
+**Workflow**:
+
+1.  **Identify Target**: Confirm which note the user wants to rephrase. Default to the last note added.
+2.  **Initiate Grilling Session**: Begin an interactive interview based on the note's content and the course context. The goal is to deeply understand the user's mental model.
+    - Ask questions one at a time, waiting for feedback before proceeding.
+    - For each question, you can suggest a recommended answer to guide the conversation.
+    - The questions should probe different angles:
+        - **Clarification**: "When you say 'X', what exactly do you mean?"
+        - **Assumptions**: "What are you assuming to be true for 'Y' to work?"
+        - **Connections**: "How does this relate to {previous concept from the course}?"
+        - **Familiarity**: "What's a real-world analogy for this? How would you explain this to a 5-year-old / a colleague?"
+        - **Implications**: "What are the consequences of this idea? What breaks if this is wrong?"
+    - If a question can be answered by exploring existing notes (`content/permanent/` or `content/literature/`), do that first before asking the user.
+3.  **Synthesize**: Once the interview feels complete and a shared understanding is reached, summarize the key insights from the conversation.
+4.  **Propose Rephrased Note**: Draft a new, clearer version of the note based on the synthesis. Present it to the user for approval.
+5.  **Update Note**: Upon confirmation, update the literature note. You can either:
+    - Replace the original raw note with the rephrased version.
+    - Add the rephrased version as a sub-bullet or a separate "Refined:" block under the original note. Ask the user for their preference.
+
+**Done when**: The user has confirmed the rephrased note, and the literature note file has been updated accordingly.
+
 ### FINISH LESSON
 
 **Trigger**: "finish lesson", "done with this lesson"
