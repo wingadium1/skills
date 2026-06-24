@@ -1,30 +1,26 @@
 # Course Note Researcher Skill
 
-The `course-note-researcher` skill is an all-in-one active companion for taking structured notes during online courses. It combines the Zettelkasten note-taking method with built-in research capabilities.
+This skill installs the **Course Note Researcher**, a discipline for integrated learning that combines structured note-taking with rigorous, delegated research.
 
-## Purpose
+## The Discipline
 
-This skill helps you:
-- Track your progress through a course.
-- Capture raw notes during lessons.
-- Organize notes into literature and permanent notes.
-- Refine your understanding of concepts through an interactive interview process.
-- **Perform external research** on concepts directly within the skill to validate, enrich, and cross-link your notes.
+The Course Note Researcher is a mental model for an AI agent to manage the entire lifecycle of learning from a course. It guides the agent to not only capture and refine information but to actively verify and enrich it by interfacing with a specialized research skill.
 
-This version of the skill is self-contained. It handles both note-taking and the research required to build a robust personal knowledge base from your course material.
+The core principles are:
+-   **Capture, Refine, Connect**: A structured workflow for turning raw notes into a connected knowledge graph.
+-   **Explicit Delegation**: All external research is explicitly and formally delegated to the `librarian` skill. This ensures research is conducted with rigor and that all findings are evidence-based.
+-   **Integrated Knowledge**: The findings from the `librarian` are not just appended; they are integrated into the notes, enriching definitions and forming new connections.
 
-## Usage
+## When to Use It
 
-To use this skill, you typically start a course and then add notes as you go. The skill will automatically perform research when it detects concepts that need further exploration.
+This is a high-level skill for managing a learning project. An agent equipped with this skill can handle the entire process from starting a course to building a comprehensive, well-researched knowledge base. It is the preferred skill when the user wants both note-taking and research to be handled in a structured, integrated manner.
 
-```
-/course-note-researcher start course "Advanced TypeScript" on "Frontend Masters" by "Matt Pocock"
-```
-```
-/course-note-researcher add note "Generics are like variables for types."
-```
-```
-/course-note-researcher finish lesson
-```
+## Getting Started
 
-For a complete list of commands and workflows, see the [SKILL.md](./SKILL.md) file.
+An agent with this skill loaded can be instructed to manage the learning process for a course:
+
+> "Use the course-note-researcher skill to guide me through the 'Advanced TypeScript' course. I want to take notes and research the core concepts as we go."
+
+The agent will then follow the phased workflow defined in `SKILL.md`, orchestrating the note-taking process and delegating to the `librarian` skill when research is needed.
+
+For a full breakdown of the discipline and its phases, see the [SKILL.md](./SKILL.md) file.

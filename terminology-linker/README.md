@@ -1,6 +1,6 @@
-# Terminology Linker Skill
+# The Terminology Linker Skill
 
-This skill installs the **Terminology Linker**, a discipline for building a living knowledge graph from your course notes.
+This skill installs **The Terminology Linker**, a discipline for building a living knowledge graph from your course notes.
 
 ## The Discipline
 
@@ -8,7 +8,8 @@ The Terminology Linker is a process for an AI agent to follow. It guides the age
 1.  **Extract** key terms from your notes.
 2.  **Define** those terms, using the `librarian` skill for research when needed.
 3.  **Formalize** the terms into a structured glossary.
-4.  **Connect** your notes by linking related terms together.
+4.  **Link** terms within your documents using Obsidian-style wikilinks.
+5.  **Connect** notes by updating their `## Connections` sections.
 
 This process transforms a collection of disconnected notes into a valuable, navigable knowledge graph.
 

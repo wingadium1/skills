@@ -59,7 +59,22 @@ With a confirmed list of terms and definitions, you will now formalize the knowl
 
 **Completion Criterion**: The glossary file for the course is created or updated, containing an entry for every confirmed term.
 
-## Phase 4: Graph Weaving (Back-Linking)
+## Phase 4: In-Document Linking
+
+This phase focuses on creating rich, bidirectional links within your notes using Obsidian-style wikilinks. This transforms your notes into a navigable knowledge graph, making connections explicit and discoverable.
+
+**Action**:
+1.  Iterate through all the permanent notes for the course.
+2.  For each note, read its content and identify any mentions of terms that exist in your glossary.
+3.  **User Confirmation**: Present the identified terms and their potential links to the user for confirmation. The user must approve the linking to avoid introducing noise.
+4.  For each user-confirmed co-occurring term, replace its first occurrence in the note's body with an Obsidian-style wikilink.
+    -   **Example**: If you are processing a note about `virtual-dom` and you find the term "reconciliation", you should replace it with `[[reconciliation]]` or `[[reconciliation-slug|reconciliation]]` if a slug is preferred.
+    -   Ensure the link points to the canonical permanent note for that term.
+    -   Do not link to the note itself.
+
+**Completion Criterion**: You have iterated through every permanent note for the course, and all user-confirmed glossary terms mentioned within them have been converted into Obsidian-style wikilinks.
+
+## Phase 5: Graph Weaving (Back-Linking)
 
 The final phase is to weave the glossary back into the fabric of the notes, transforming them into a connected graph.
 
@@ -67,7 +82,7 @@ The final phase is to weave the glossary back into the fabric of the notes, tran
 1.  Iterate through all the permanent notes for the course.
 2.  For each note, read its content and identify any mentions of other terms that exist in your new glossary.
 3.  For each co-occurring term you find, add a link to its permanent note in the `## Connections` section of the current note you are processing.
-    -   Example: If you are processing the `virtual-dom` note and you see the word "reconciliation", you should ensure that `[[permanent/reconciliation]]` is listed under `## Connections`.
+    -   **Example**: If you are processing the `virtual-dom` note and you see the word "reconciliation", you should ensure that `[[permanent/reconciliation]]` is listed under `## Connections`.
     -   Do not add a link to the note itself.
 
 **Completion Criterion**: You have iterated through every permanent note for the course and updated its `## Connections` section to include links to any other glossary terms mentioned in its body. The knowledge graph is now connected.

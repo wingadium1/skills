@@ -1,29 +1,22 @@
 # Course Note Skill
 
-The `course-note` skill is an active companion for taking structured notes during online courses, following the Zettelkasten method. It is designed to be a focused note-taking tool.
+This skill provides a discipline for taking structured notes on online courses, following the Zettelkasten method. It is designed to be a focused note-taking tool.
 
-## Purpose
+## The Discipline
 
-This skill helps you:
-- Track your progress through a course.
-- Capture raw notes during lessons.
-- Organize notes into literature and permanent notes.
-- Refine your understanding of concepts through an interactive interview process.
+This skill is for capturing and structuring knowledge. It is not for conducting research. When a concept needs validation or deeper exploration, this skill's discipline is to **delegate that task to a research skill like The Librarian**.
 
-This version of the skill **delegates all external research**. When it identifies a concept that needs validation or deeper exploration, it will prompt you to use the `librarian` skill. This keeps the note-taking process clean and separated from research.
+## Core Workflow
 
-## Usage
+1.  **Capture**: Use `ADD NOTE` to capture raw thoughts during a lesson.
+2.  **Refine**: Use `REPHRASE NOTE` to clarify and deepen your understanding of a captured thought through an interactive interview.
+3.  **Synthesize & Delegate Research**: At the end of a lesson or section, identify core concepts and delegate research on them to the `librarian` skill.
+4.  **Integrate**: Use the findings from the research to create or update your permanent notes.
 
-To use this skill, you typically start a course and then add notes as you go.
+## Getting Started
 
-```
-/course-note start course "Advanced TypeScript" on "Frontend Masters" by "Matt Pocock"
-```
-```
-/course-note add note "Generics are like variables for types."
-```
-```
-/course-note rephrase this
-```
+An agent with this skill loaded can be instructed to manage notes for a specific course:
 
-For a complete list of commands and workflows, see the [SKILL.md](./SKILL.md) file.
+> "Use the course-note skill to start a new course called 'Advanced TypeScript'."
+
+For a full breakdown of the discipline and its phases, see the [SKILL.md](./SKILL.md) file.
