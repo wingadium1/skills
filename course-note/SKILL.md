@@ -3,211 +3,137 @@ name: course-note
 description: An active note-taking companion for online courses using the Zettelkasten method. It focuses on capturing, organizing, and refining notes. For external research, it delegates to the 'librarian' skill. Use when a user wants to manage course notes ('start course', 'add note', 'finish lesson').
 ---
 
-# Course Note Taker
+# Discipline: Structured Learning with Zettelkasten
 
-Active companion during online course learning. One literature note per course **section**, one permanent note per **atomic** concept. Progress tracked in `content/wip/{course-slug}.md` — the agent reads this to **resume** context across sessions.
+This skill enforces a rigorous discipline for structured learning, transforming ephemeral course material into a durable, interconnected knowledge base using the Zettelkasten method. It is your unwavering companion, ensuring every insight is captured, refined, and integrated.
 
-When context is ambiguous (user says "add note" without specifying course), read the most recently updated wip note in `content/wip/` to restore context.
+**Core Principle**: Every piece of knowledge must be atomic, linked, and verifiable. Ambiguity is the enemy of understanding.
 
-## Lifecycle
+When context is ambiguous (e.g., "add note" without specifying a course), the system will intelligently infer context by reading the most recently updated work-in-progress (WIP) note in `content/wip/`.
 
-```
-START COURSE  →  START SECTION  →  START LESSON  →  ADD NOTE*  →  FINISH LESSON
-                                                                          ↓
-                                                                   FINISH SECTION
-                                                                          ↑
-                                                                   UPDATE (any time)
-```
+## Phases of Structured Learning
 
-## Actions
+### Phase 1: Course Initialization
 
-### START COURSE
-
-**Trigger**: "start course {title} on {platform} by {instructor}"
-
-Create `content/wip/{course-slug}.md`:
-
-```yaml
----
-title: "{Course Title} — Tracker"
-type: course-tracker
-platform: {platform}
-course: "{course-slug}"
-instructor: "{Instructor Name}"
-tags: [{domain}, course]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
----
-
-# {Course Title}
-
-**Platform**: {platform} | **Instructor**: {Instructor Name} | **Status**: active
-
-## Progress
-
-| # | Section | Status | Lessons |
-|---|---------|--------|---------|
-**Current**: —
-```
-
-**Done when**: wip note created, all metadata confirmed (slug, platform, instructor, domain tags).
-
-### START SECTION
-
-**Trigger**: "start section {N}: {title}"
-
-Create the section literature note at `content/literature/{course-slug}-section-{N}-{slug}.md` with frontmatter filled, Summary and Key Ideas empty. Update wip note: add row to progress table, mark as current.
-
-If the course wip note doesn't exist, ask owner to START COURSE first.
-
-**Done when**: literature note created, wip note updated.
-
-### START LESSON
-
-**Trigger**: "start lesson {N}: {title}"
-
-Update wip note: set current lesson. The agent confirms: "Ready — Section {N}, Lesson {N}: {title}."
-
-If the section literature note doesn't exist (first lesson in section), create it first.
-
-**Done when**: wip note shows current section + lesson, agent confirmation given.
-
-### ADD NOTE
-
-**Trigger**: "add note: {text}" or bare "{text}" during an active lesson
-
-Append to the section literature note under **Key Ideas**, prefixed `L{N}:`. Keep the user's wording exactly — this is raw capture. Do not discuss, synthesize, or extract concepts.
-
-As notes accumulate, mentally flag any that match the **extraction heuristics** — but do not act on them. Save that for FINISH LESSON.
-
-If no lesson is active (no wip note or ambiguous context), ask which course/section/lesson.
-
-**Done when**: note appended under correct lesson prefix. No file writes beyond the literature note.
-
-### REPHRASE NOTE
-
-**Trigger**: "rephrase this", "clarify this note", "let's refine this thought"
-
-This action transforms a raw, quickly-captured note into a clearer, more familiar, and well-understood concept through a relentless interview process.
+**Goal**: Establish the foundational tracking and metadata for a new course, ensuring a single source of truth for progress.
 
 **Workflow**:
+1.  **Trigger**: Initiate with "start course {title} on {platform} by {instructor}".
+2.  **Action**: A dedicated work-in-progress (WIP) note will be meticulously crafted at `content/wip/{course-slug}.md`. This note serves as the central hub for your course journey.
+3.  **Content**: The WIP note will be pre-populated with essential frontmatter (title, type, platform, course slug, instructor, creation/update timestamps, and domain-specific tags). A progress table will be initialized, awaiting your learning milestones.
 
-1.  **Identify Target**: Confirm which note the user wants to rephrase. Default to the last note added.
-2.  **Initiate Grilling Session**: Begin an interactive interview based on the note's content and the course context. The goal is to deeply understand the user's mental model.
-    - Ask questions one at a time, waiting for feedback before proceeding.
-    - For each question, you can suggest a recommended answer to guide the conversation.
-    - The questions should probe different angles:
-        - **Clarification**: "When you say 'X', what exactly do you mean?"
-        - **Assumptions**: "What are you assuming to be true for 'Y' to work?"
-        - **Connections**: "How does this relate to {previous concept from the course}?"
-        - **Familiarity**: "What's a real-world analogy for this? How would you explain this to a 5-year-old / a colleague?"
-        - **Implications**: "What are the consequences of this idea? What breaks if this is wrong?"
-    - If a question can be answered by exploring existing notes (`content/permanent/` or `content/literature/`), do that first before asking the user.
-3.  **Synthesize**: Once the interview feels complete and a shared understanding is reached, summarize the key insights from the conversation.
-4.  **Propose Rephrased Note**: Draft a new, clearer version of the note based on the synthesis. Present it to the user for approval.
-5.  **Update Note**: Upon confirmation, update the literature note. You can either:
-    - Replace the original raw note with the rephrased version.
-    - Add the rephrased version as a sub-bullet or a separate "Refined:" block under the original note. Ask the user for their preference.
+**Completion Criterion**: The WIP note (`content/wip/{course-slug}.md`) MUST exist, and all metadata (slug, platform, instructor, domain tags) MUST be accurately confirmed. Failure to meet this criterion halts progress.
 
-**Done when**: The user has confirmed the rephrased note, and the literature note file has been updated accordingly.
+### Phase 2: Section & Lesson Engagement
 
-### FINISH LESSON
+**Goal**: Systematically capture raw insights during active learning sessions and iteratively refine them into clear, concise concepts.
 
-**Trigger**: "finish lesson", "done with this lesson"
+**Workflow**:
+1.  **Start Section**: Trigger with "start section {N}: {title}". A literature note will be created at `content/literature/{course-slug}-section-{N}-{slug}.md`, ready for your observations. The WIP note's progress table will be updated, marking the current section. If the course WIP note is absent, you will be directed to Phase 1.
+2.  **Start Lesson**: Trigger with "start lesson {N}: {title}". The WIP note will be updated to reflect the active lesson. A confirmation will be issued: "Ready — Section {N}, Lesson {N}: {title}." If the section literature note is missing, it will be created.
+3.  **Add Note**: Use "add note: {text}" or simply "{text}" during an active lesson. Your raw observations will be appended directly to the section literature note under **Key Ideas**, prefixed `L{N}:`. **Crucially, no synthesis or interpretation occurs at this stage; capture verbatim.** Mentally flag potential atomic concepts for later extraction. If no lesson is active, the system will demand clarification.
+4.  **Rephrase Note**: Trigger with "rephrase this", "clarify this note", or "let's refine this thought". This initiates a rigorous, interactive interview process to transform raw notes into deeply understood concepts.
+    *   **Identify Target**: The system will confirm the note to be rephrased (defaulting to the last added).
+    *   **Grilling Session**: A relentless interview will commence, probing for clarification, assumptions, connections to prior knowledge, real-world analogies, and implications. Each question demands a response, guiding you towards a precise understanding. **If external validation is required, the system will explicitly delegate to the `librarian` skill to find established terminology, related patterns, or alternative framings.**
+    *   **Synthesize & Propose**: Upon achieving shared understanding, a summary of key insights will be presented, followed by a proposed rephrased note for your approval.
+    *   **Update**: Upon your confirmation, the literature note will be updated, either by replacing the original or adding the refined version as a sub-bullet, based on your preference.
 
-1. **Review**: read all `L{N}:` notes for this lesson. Ask the owner if anything was missed.
-2. **Discuss**: ask 1–2 questions — what surprised them? What would they explain to a colleague? If owner pushes back, proceed; flag in My Take.
-3. **Mine & Delegate Research**: Scan raw notes against the **extraction heuristics** (see Reference). Identify 2–5 **atomic** concepts. For each concept scored **High** (cross-cutting, repeated, foundational), formulate a research query and delegate to the `librarian` skill to find established terminology, related patterns, and alternative framings. Use the librarian's findings to sharpen the concept slug and discover cross-links. Propose slugs + one-sentence descriptions to owner for confirmation.
-4. **Write permanent notes**: for each confirmed concept, check `content/permanent-notes.md` for existence.
-   - **New**: create `content/permanent/{slug}.md`. Write body (1–3 paragraphs, English). Populate `## Connections` by scanning existing permanent notes for related concepts — link them. Populate `## Sources` with this section's literature note.
-   - **Existing**: read it. If this lesson adds depth → update body, add this literature note to Sources, add any new cross-links to `## Connections`.
-   - **Cross-link back**: update the section literature note's `## Links` with `[[permanent/{slug}]]` for every permanent note touched.
-5. **Update catalogs**: `content/permanent-notes.md` (new rows), `content/literature-notes.md` (if new section note), `content/log.md` with `## [YYYY-MM-DD] capture | {Course} — S{N} L{N}`.
-6. **Update wip**: mark lesson complete in progress table.
+**Completion Criterion**: Each raw note MUST be captured under the correct lesson prefix. Rephrased notes MUST be confirmed by the user and accurately reflected in the literature note. All external research needs identified during rephrasing MUST be delegated to and resolved by the `librarian` skill.
 
-**Done when**: every extracted concept is a new or updated permanent note, bidirectional links exist between the literature note and all touched permanent notes, all three catalogs updated, wip note shows lesson complete. Every High-signal concept was researched using the `librarian` skill before writing. No duplicate permanent notes.
+### Phase 3: Concept Crystallization & Research
 
-### FINISH SECTION
+**Goal**: Transform raw and refined notes into atomic, interconnected permanent notes, enriching the knowledge graph through targeted external research.
 
-**Trigger**: "finish section", "done with this section"
+**Workflow**:
+1.  **Finish Lesson**: Trigger with "finish lesson" or "done with this lesson".
+    *   **Review & Discuss**: All `L{N}:` notes for the lesson will be reviewed. You will be prompted to confirm completeness and reflect on key takeaways.
+    *   **Mine & Delegate Research**: The system will rigorously scan raw notes against predefined **extraction heuristics** (see Reference) to identify 2–5 **atomic** concepts. For each concept scoring **High** (cross-cutting, repeated, foundational), a precise research query will be formulated and **delegated to the `librarian` skill**. The `librarian`'s findings will be used to sharpen concept slugs and discover cross-links. Proposed slugs and one-sentence descriptions will be presented for your confirmation.
+    *   **Write Permanent Notes**: For each confirmed concept, the system will check `content/permanent-notes.md`.
+        *   **New Concepts**: A new permanent note will be created at `content/permanent/{slug}.md` (1–3 paragraphs, English). `## Connections` will be populated by scanning existing permanent notes for related concepts, establishing vital links. `## Sources` will link back to this section's literature note.
+        *   **Existing Concepts**: If a permanent note already exists, it will be updated. This lesson's literature note will be added to `## Sources`, and any new insights will deepen the body. New cross-links will be integrated into `## Connections`.
+    *   **Cross-link Back**: The section literature note's `## Links` will be updated with `[[permanent/{slug}]]` for every permanent note touched, ensuring bidirectional traceability.
+    *   **Update Catalogs**: `content/permanent-notes.md`, `content/literature-notes.md` (if new section note), and `content/log.md` will be updated to reflect the new knowledge.
+    *   **Update WIP**: The WIP note will mark the lesson as complete.
+2.  **Finish Section**: Trigger with "finish section" or "done with this section".
+    *   **Review Summary**: The section literature note's Summary will be finalized.
+    *   **Delegate Cross-concept Research**: All lessons within the section will be scanned for recurring principles. Any concept appearing across 2+ lessons not yet extracted will be flagged. **The `librarian` skill will be delegated to validate terminology and surface connections for these flagged concepts.** If a concept is sufficiently atomic, a new permanent note will be created and backlinked.
+    *   **Map of Content (MOC)**: You will be prompted to create a Map of Content for the course if 5+ permanent notes exist. If approved, `content/maps/map-of-{course-slug}.md` will be created or updated.
+    *   **Update WIP**: The WIP note will mark the section as complete.
 
-1. Review the section literature note — ensure Summary captures all lessons.
-2. **Delegate Cross-concept research**: Scan all lessons in this section for recurring principles you may have missed. Any concept that appears across 2+ lessons but wasn't extracted → flag it. Delegate to the `librarian` skill to validate terminology and surface connections for these flagged concepts. If a concept is substantial enough to be atomic, create a permanent note and backlink.
-3. Ask: "Create a Map of Content for this course?" If yes and 5+ permanent notes exist → create or update `content/maps/map-of-{course-slug}.md`.
-4. Update wip note: mark section complete.
+**Completion Criterion**: Every extracted concept MUST result in a new or updated permanent note. Bidirectional links MUST exist between literature notes and all touched permanent notes. All three catalogs (`permanent-notes.md`, `literature-notes.md`, `log.md`) MUST be updated. The WIP note MUST reflect lesson and section completion. **Every High-signal concept MUST be researched using the `librarian` skill before finalization.** No duplicate permanent notes are permitted.
 
-**Done when**: literature note Summary finalized, cross-concept research pass complete, MOC created/updated if requested, wip updated.
+### Phase 4: Knowledge Maintenance & Evolution
 
-### UPDATE
+**Goal**: Ensure the knowledge base remains dynamic, accurate, and reflective of your evolving understanding.
 
-**Trigger**: "update {course|section|lesson} with: {text}"
+**Workflow**:
+1.  **Update**: Trigger with "update {course|section|lesson} with: {text}".
+2.  **Action**: Retrospective insights will be precisely appended:
+    *   **Course-level**: Appended to the WIP note (a `## Notes` section will be added if absent).
+    *   **Section-level**: Appended to the section literature note's My Take or Summary.
+    *   **Lesson-level**: Appended to the lesson's Key Ideas within the section literature note.
 
-Add retrospective insight at the specified level:
-- **Course** → append to wip note (add a `## Notes` section if needed).
-- **Section** → append to section literature note's My Take or Summary.
-- **Lesson** → append to the lesson's Key Ideas in the section literature note.
-
-**Done when**: insight appended at correct level.
+**Completion Criterion**: The insight MUST be accurately appended at the specified level within the correct file.
 
 ## Reference
 
 ### Naming
 
-| Note | Pattern |
-|------|---------|
-| Wip tracker | `{course-slug}.md` |
-| Literature | `{course-slug}-section-{N}-{section-slug}.md` |
-| Permanent | `{concept-slug}.md` (lowercase, hyphens, no dates) |
+| Note        | Pattern                                   |
+|-------------|-------------------------------------------|
+| Wip tracker | `{course-slug}.md`                        |
+| Literature  | `{course-slug}-section-{N}-{section-slug}.md` |
+| Permanent   | `{concept-slug}.md` (lowercase, hyphens, no dates) |
 
-### Literature note sections
+### Literature Note Sections
 
-**Summary** (fill during FINISH SECTION) → **Key Ideas** (bullets prefixed `L{N}:`) → **Quotes** → **My Take** (Vietnamese) → **Links** (`[[permanent/...]]`)
+**Summary** (filled during FINISH SECTION) → **Key Ideas** (bullets prefixed `L{N}:`) → **Quotes** → **My Take** (Vietnamese) → **Links** (`[[permanent/...]]`)
 
-### Permanent note sections
+### Permanent Note Sections
 
 Body (1–3 paragraphs) → `## Connections` (`[[permanent/...]]` to related concepts) → `## Sources` (`[[literature/...]]` to course lit notes)
 
 ### Language
 
-| Content | Language |
-|---------|----------|
-| Concept body, Summary, Key Ideas | English |
-| My Take | Vietnamese |
+| Content                     | Language |
+|-----------------------------|----------|
+| Concept body, Summary, Key Ideas | English  |
+| My Take                     | Vietnamese |
 
-For non-technical courses, ask owner.
+For non-technical courses, always confirm language preference with the owner.
 
 ### Tags
 
 Domain tags + `course`. Example: `tags: [docker, containers, course]`
 
-### Extraction heuristics
+### Extraction Heuristics
 
-When scanning raw notes for permanent-note-worthy concepts, prioritize:
+When rigorously scanning raw notes for permanent-note-worthy concepts, prioritize with extreme prejudice:
 
-| Signal | Weight | Example |
-|--------|--------|---------|
-| **Cross-cutting** — applies beyond this lesson or course | High | "immutable infrastructure" vs "docker run -p" |
-| **Repeated** — mentioned across multiple lessons or sections | High | concept that keeps coming back |
-| **Foundational** — prerequisite for understanding later material | High | "container vs image" before "docker layers" |
-| **Owner emphasized** — flagged with "important", "key", or in discuss step | Medium | what surprised them |
-| **Actionable** — a pattern, rule, or principle you'd apply at work | Medium | "always pin base image versions" |
-| **Definitional** — a term the course invents or redefines | Low | course-specific jargon |
+| Signal              | Weight | Example                                       |
+|---------------------|--------|-----------------------------------------------|
+| **Cross-cutting**   | High   | "immutable infrastructure" vs "docker run -p" |
+| **Repeated**        | High   | Concept that consistently reappears           |
+| **Foundational**    | High   | "container vs image" before "docker layers"   |
+| **Owner emphasized**| Medium | Flagged with "important", "key", or in discussion |
+| **Actionable**      | Medium | A pattern, rule, or principle for practical application |
+| **Definitional**    | Low    | Course-specific jargon or new terms           |
 
-De-prioritize: lesson-specific trivia, UI walkthroughs, version-specific details (unless fundamental), "how to install X" steps.
+De-prioritize ruthlessly: lesson-specific trivia, UI walkthroughs, version-specific details (unless fundamental), "how to install X" steps.
 
-### Cross-linking rules
+### Cross-linking Rules
 
-When creating or updating a permanent note from a course:
+When forging new permanent notes or updating existing ones from course material, adhere to these immutable laws:
 
-1. **Permanent → Sources**: always include `[[literature/{course-slug}-section-{N}-...]]` for the course section that informed it.
-2. **Permanent → Connections**: scan `content/permanent-notes.md` for related concepts. Search for the concept slug and domain tags. Link any that are genuinely related — the richer the graph, the more value compounds.
-3. **Literature → Links**: after writing permanent notes, add `[[permanent/{slug}]]` entries to the section literature note's `## Links`. This is the backlink — every permanent note created from this course must appear here.
-4. **Cross-course linking**: if a permanent note already exists from a different course, do not create a duplicate. Update it — add the new course's literature note to `## Sources`, and add any new depth to the body.
+1.  **Permanent → Sources**: Invariably include `[[literature/{course-slug}-section-{N}-...]]` for the precise course section that informed the concept.
+2.  **Permanent → Connections**: Systematically scan `content/permanent-notes.md` for genuinely related concepts. Employ the concept slug and domain tags to discover and link relevant knowledge. The richer the graph, the greater the compounding value.
+3.  **Literature → Links**: Post-creation of permanent notes, append `[[permanent/{slug}]]` entries to the section literature note's `## Links`. This establishes the essential backlink; every permanent note derived from this course MUST be referenced here.
+4.  **Cross-course Linking**: If a permanent note already exists from a disparate course, under no circumstances create a duplicate. Instead, update the existing note: integrate the new course's literature note into `## Sources` and infuse any new depth into the body.
 
-### Atomic test
+### Atomic Test
 
-Can this idea be explained in 1–3 paragraphs without branching into another idea? Does an existing note already cover it? (Check `permanent-notes.md` first.) If it splits → two notes. If it overlaps → update existing.
+Can this idea be articulated in 1–3 paragraphs without fracturing into another distinct idea? Does an existing note already encapsulate this concept? (Verify `permanent-notes.md` with extreme prejudice.) If it bifurcates, it demands two notes. If it overlaps, the existing note MUST be updated.
 
-### Raw material
+### Raw Material
 
-If `raw/courses/{course-slug}/` contains transcripts or slides, read them during START LESSON. This enriches the ADD NOTE and FINISH LESSON steps.
+Should `raw/courses/{course-slug}/` contain transcripts or slides, these resources MUST be ingested during START LESSON to enrich the ADD NOTE and FINISH LESSON processes.

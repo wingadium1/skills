@@ -13,3 +13,7 @@ Two variants are available for taking notes on online courses using the Zettelka
 
 - **[librarian](./librarian/SKILL.md)**: A powerful, read-only research assistant for investigating external libraries, OSS projects, and APIs. It provides evidence-based claims with citable, SHA-pinned GitHub permalink citations.
 - **[hyperplan](./hyperplan/SKILL.md)**: An adversarial multi-agent planning skill for rigorous, cross-critiqued debate on complex tasks. It uses a team of specialized agents to attack a plan from all angles before a final, robust version is produced.
+
+## Knowledge Management
+
+- **[terminology-linker](./terminology-linker/SKILL.md)**: A discipline for extracting key terminology from notes, building a glossary, and creating a connected knowledge graph.
