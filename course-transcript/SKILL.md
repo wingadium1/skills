@@ -1,70 +1,61 @@
 ---
 name: course-transcript
-description: An active learning companion for online courses that processes full transcripts. It summarizes lectures, extracts key ideas, and automatically creates [[wikilinks]] to a permanent knowledge base. Use when a user wants to process a course lecture transcript ('start lecture', 'add transcript').
+description: An active learning companion that processes lecture transcripts into a single, auto-linked literature note per course section. Use with 'start section' and 'add transcript for lecture'.
 ---
 
-# Discipline: Transcript-based Zettelkasten
+# Discipline: Transcript-based Zettelkasten (Section-level)
 
-This skill automates the processing of lecture transcripts into structured, interconnected notes using the Zettelkasten method. It turns raw text into a refined literature note with automated conceptual linking.
+This skill automates processing lecture transcripts into a structured, interconnected literature note for each section of a course.
 
-**Core Principle**: A transcript is raw material. The goal is a structured note where key concepts are automatically linked to your permanent knowledge graph.
+**Core Principle**: One section, one note. Each lecture's processed transcript is appended to the section note, with key concepts automatically linked to your permanent knowledge graph.
 
 ## Workflow
 
-### 1. Start a Lecture
+### 1. Start a Section
 
-**Goal**: Prepare the environment to process a new lecture transcript.
-
-**Workflow**:
-1.  **Trigger**: Initiate with "start lecture {lecture_title} from course {course_slug}".
-2.  **Context Check**: The skill will verify that the course's Work-in-Progress note (`content/wip/{course-slug}.md`) exists. If not, it will guide you to create one first.
-3.  **Action**: A new, empty literature note is created at `content/literature/{course-slug}-{lecture-slug}.md`. The system will confirm: "Ready for transcript for lecture: {lecture_title}".
-
-**Completion Criterion**: An empty literature note for the specified lecture MUST exist.
-
-### 2. Process a Transcript
-
-**Goal**: Transform a raw transcript into a structured, auto-linked literature note in a single step.
+**Goal**: Prepare a literature note to hold all lectures for a new course section.
 
 **Workflow**:
-1.  **Trigger**: Use "add transcript: {file_path_or_pasted_text}" while a lecture is active.
+1.  **Trigger**: `start section {N}: {section_title} from course {course_slug}`.
+2.  **Context Check**: Verifies the course WIP note (`content/wip/{course-slug}.md`) exists.
+3.  **Action**: Creates a new, empty literature note at `content/literature/{course-slug}-section-{N}-{section-slug}.md`. The note is pre-populated with frontmatter and empty `## Summary`, `## Key Ideas`, `## Quotes`, `## My Take`, and `## Links` sections.
+4.  **Confirmation**: "Ready for transcripts for Section {N}: {section_title}".
+
+**Completion Criterion**: An empty literature note for the section MUST exist.
+
+### 2. Process a Lecture Transcript
+
+**Goal**: Distill a raw transcript for a single lecture and append it as structured, auto-linked key ideas to the active section note.
+
+**Workflow**:
+1.  **Trigger**: `add transcript for lecture {N}: {file_path_or_pasted_text}`.
 2.  **Step 1: Delegate Summarization & Structuring**:
     *   A specialist sub-agent is invoked with the raw transcript.
-    *   **Sub-agent Prompt**: "You are an academic note-taking assistant. Read the following transcript. Your task is to distill it into a structured list of key ideas. The format should be a series of bullet points, capturing the core concepts, arguments, and examples. Mimic the structure of the provided sample note. Be concise and accurate."
+    *   **Sub-agent Prompt**: "You are an academic note-taking assistant. Read the transcript for Lecture {N}. Distill it into a structured list of key ideas. **Prefix every line of your output with `L{N}: `.** Be concise, accurate, and capture the core concepts, arguments, and examples."
     *   **Input**: Raw transcript text.
-    *   **Output**: A clean, structured block of text representing the "Key Ideas".
+    *   **Output**: A clean block of text where every line starts with `L{N}:`.
 3.  **Step 2: Auto-linking**:
-    *   The skill retrieves the full list of existing permanent notes from the `/Users/sonht2.gmo/git/athena/content/permanent/` directory.
-    *   It processes this list into a vocabulary of concept slugs (e.g., "tool-error-design").
-    *   The structured "Key Ideas" text is scanned. For each concept slug, the corresponding phrase (e.g., "tool error design") is replaced with a wikilink (`[[tool-error-design]]`). This search is case-insensitive, and spaces are treated as hyphens.
-4.  **Step 3: Assemble & Write Note**:
-    *   The skill assembles the complete literature note.
-    *   It includes the standard YAML frontmatter (title, type, source, author, tags).
-    *   It populates the note with a `## Summary` (left "To be synthesized"), the auto-linked `## Key Ideas`, and empty `## Quotes`, `## My Take`, and `## Links` sections.
-    *   The final, processed note is written to the literature note file created in Step 1, overwriting the empty file.
+    *   The skill retrieves the list of existing permanent notes from `/Users/sonht2.gmo/git/athena/content/permanent/`.
+    *   It creates a vocabulary of concept slugs (e.g., "tool-error-design").
+    *   The structured `L{N}:` text from the sub-agent is scanned. For each concept slug, the corresponding phrase (e.g., "tool error design") is replaced with a wikilink (`[[tool-error-design]]`).
+4.  **Step 3: Append to Section Note**:
+    *   The skill reads the target section literature note.
+    *   The processed, auto-linked `L{N}:` block is appended to the `## Key Ideas` section.
+    *   The file is saved.
 
-**Completion Criterion**: The literature note (`content/literature/{...}.md`) MUST be populated with the structured, auto-linked content.
+**Completion Criterion**: The section literature note MUST be updated with the new, processed, and auto-linked key ideas for the specified lecture.
 
 ## Reference
 
 ### Naming
 
-| Note        | Pattern                               |
-|-------------|---------------------------------------|
-| Wip tracker | `{course-slug}.md`                    |
-| Literature  | `{course-slug}-{lecture-slug}.md`     |
-| Permanent   | `{concept-slug}.md`                   |
-
-### Literature Note Sections
-
-The processed note will have the following structure:
-1.  `## Summary`
-2.  `## Key Ideas` (Contains the structured, auto-linked text)
-3.  `## Quotes`
-4.  `## My Take`
-5.  `## Links`
+| Note        | Pattern                                     |
+|-------------|---------------------------------------------|
+| Wip tracker | `{course-slug}.md`                          |
+| Literature  | `{course-slug}-section-{N}-{section-slug}.md` |
+| Permanent   | `{concept-slug}.md`                         |
 
 ### Wikilinking
 
--   **Source**: The list of files in `/Users/sonht2.gmo/git/athena/content/permanent/`.
--   **Mechanism**: The skill identifies phrases in the note that match the filenames of permanent notes and wraps them in `[[filename-without-md]]`.
+-   **Source**: Files in `/Users/sonht2.gmo/git/athena/content/permanent/`.
+-   **Mechanism**: The skill identifies phrases matching permanent note filenames and wraps them in `[[filename-without-md]]`.
