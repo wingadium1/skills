@@ -4,17 +4,30 @@ This skill processes a lecture transcript, turning it into structured and auto-l
 
 **This skill does NOT create new notes.** It only appends processed lecture content to an existing literature note.
 
-## Core Workflow
+## Concrete Workflow Example
 
-1.  **Prerequisite**: You must first create a section note using the `start-course-section` skill.
-    > "Use the `start-course-section` skill to start section 6: 'Tool Design & MCP' from course 'cca-masterclass'."
+Here is how you would use the skills together to process a lecture from start to finish.
 
-2.  **Process a Lecture**: Once the section note exists, use this skill to add a lecture transcript to it.
-    > "add transcript for lecture 1 of course 'cca-masterclass': {paste transcript here}"
+**1. Start the Section**
 
-The skill will then automatically:
-- Summarize and structure the transcript into key ideas.
-- Auto-link concepts to your permanent notes.
-- Append the result to the correct section note.
+First, use the `start-course-section` skill to create the note for the entire section.
 
-For a full breakdown, see the [SKILL.md](./SKILL.md) file.
+> `start section 6: "Tool Design & MCP" from course "certified-claude-architect-masterclass-2026"`
+
+This prepares the literature note for all the lectures in section 6.
+
+**2. Process Your First Lecture**
+
+Next, use this skill (`course-transcript`) to add the transcript for the first lecture.
+
+> `add transcript for lecture 1 of course "certified-claude-architect-masterclass-2026": {paste the full transcript here}`
+
+The skill will automatically process the text, add `[[wikilinks]]` to known concepts, and append the structured `L1:` notes to the section file.
+
+**3. Process Subsequent Lectures**
+
+For the next lecture in the same section, you simply run the command again with the new lecture number and transcript.
+
+> `add transcript for lecture 2 of course "certified-claude-architect-masterclass-2026": {paste transcript for lecture 2}`
+
+This will append the structured `L2:` notes to the same section file, keeping all your notes for that section organized in one place.
